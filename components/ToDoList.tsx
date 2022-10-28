@@ -25,11 +25,11 @@ const ToDoList: NextPage = () => {
 
   const loadTodosFromLocalStorage = () => {
     const response = localStorage.getItem("todos");
-    return response === "" ? [] : response;
+    return response;
   };
 
   useEffect(() => {
-    if (loadTodosFromLocalStorage() !== "[]") {
+    if (loadTodosFromLocalStorage()) {
       wholeArray.current = JSON.parse(loadTodosFromLocalStorage() as string);
       const array = [];
       for (let i in wholeArray.current) {
@@ -88,6 +88,7 @@ const ToDoList: NextPage = () => {
             id={item.id}
             arrayPart={wholeArray.current[index]}
             deleteFunction={handleDeleteTodo}
+            parentCompletion={false}
           />
         );
       })}

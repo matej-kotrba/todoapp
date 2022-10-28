@@ -1,4 +1,10 @@
-import React, { useState, useRef, memo, useEffect } from "react";
+import React, {
+  useState,
+  useRef,
+  memo,
+  useEffect,
+  type ChangeEvent,
+} from "react";
 import { MdDelete, MdRefresh } from "react-icons/md";
 import { AiOutlinePlus } from "react-icons/ai";
 import { FaPaintBrush } from "react-icons/fa";
@@ -14,6 +20,7 @@ const ToDoItem = memo(function ToDoItem({
   hasPath,
   bgColor,
   arrayPart,
+  parentCompletion,
 }: {
   title: string;
   id: string;
@@ -21,6 +28,7 @@ const ToDoItem = memo(function ToDoItem({
   arrayPart: NestedItemsInterface;
   hasPath?: boolean;
   bgColor?: string;
+  parentCompletion: boolean;
 }) {
   const [nestedItems, setNestedItems] = useState<
     { title: string; id: string }[]
@@ -29,13 +37,30 @@ const ToDoItem = memo(function ToDoItem({
   const [isChecked, setIsChecked] = useState<boolean>(arrayPart.completed);
 
   useEffect(() => {
+    if (parentCompletion === true) setIsChecked(true);
+  }, [parentCompletion]);
+
+  useEffect(() => {
     arrayPart.completed = isChecked;
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isChecked]);
 
   const [color, setColor] = useState(bgColor || "#f2f2f2");
   const [isColorOpen, setIsColorOpen] = useState(false);
 
-  const idCount = useRef(arrayPart.items.length);
+  const idCount = useRef(0);
+
+  useEffect(() => {
+    if (arrayPart.items[0]) {
+      idCount.current = parseInt(
+        arrayPart.items[arrayPart.items.length - 1].id.slice(
+          arrayPart.items[arrayPart.items.length - 1].id.lastIndexOf("i") + 1,
+          arrayPart.items[arrayPart.items.length - 1].id.length
+        )
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleNewTodo = () => {
     idCount.current++;
@@ -77,15 +102,16 @@ const ToDoItem = memo(function ToDoItem({
     setIsColorOpen((old) => !old);
   };
 
-  const handleChange = () => {
-    arrayPart;
+  const handleTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    arrayPart.title = e?.target?.value;
   };
 
   return (
     <>
       <div
-        className="relative max-w-2xl p-8 my-4 shadow-lg rounded-xl flex justify-between items-center group"
-        style={{ backgroundColor: color }}
+        className={`relative max-w-2xl p-8 my-4 shadow-lg rounded-xl flex justify-between 
+        items-center group bg-lightPrimary dark:bg-gray-700`}
+        // style={{ backgroundColor: color === "default" ? "" : color }}
         onMouseLeave={() => setIsColorOpen(false)}
       >
         {hasPath && (
@@ -113,39 +139,51 @@ const ToDoItem = memo(function ToDoItem({
           </svg>
         )}
         <div className="relative flex items-center gap-2">
-          <div
-            onClick={() => setIsChecked((old) => !old)}
-            className="accent-slate-500 rounded-full text-4xl p-1 cursor-pointer
-            hover:bg-whiteHoverColorEffect duration-200 shadow-lg"
-          >
-            {isChecked ? (
-              <TiTick className="text-green-500" />
-            ) : (
-              <IoClose className="text-red-500" />
-            )}
-          </div>
-          <input
-            type={"text"}
-            className={`text-xl bg-transparent outline-none peer w-full
+          <div className="flex gap-2 items-center">
+            <div
+              onClick={() => setIsChecked((old) => !old)}
+              className="accent-slate-500 rounded-full text-4xl p-1 cursor-pointer
+            hover:bg-whiteHoverColorEffect dark:hover:bg-darkHoverColorEffect duration-200 shadow-lg"
+            >
+              {isChecked ? (
+                <TiTick className="text-green-500" />
+              ) : (
+                <IoClose className="text-red-500" />
+              )}
+            </div>
+            <div className="relative">
+              <input
+                type={"text"}
+                className={`text-xl bg-transparent outline-none peer w-full
              md:w-80 ${
                isChecked
-                 ? "text-slate-400 line-through decoration-slate-600 decoration-2"
-                 : "text-gray-800"
+                 ? "text-slate-400 dark:text-slate-900"
+                 : "text-gray-800 dark:text-white"
              }`}
-            defaultValue={title}
-            placeholder={"Your new awesome ToDo"}
-            onChange={handleChange}
-          ></input>
-          <div
-            className="absolute top-full left-0 w-full h-1 rounded-full bg-red-500 origin-center 
+                defaultValue={title}
+                placeholder={"Your new awesome ToDo"}
+                onChange={handleTitleChange}
+                disabled={isChecked}
+              ></input>
+              <div
+                className="absolute top-full left-0 w-full h-1 rounded-full bg-red-500 origin-center 
         scale-x-0 peer-focus:scale-x-100 duration-150 ease-linear"
-          ></div>
+              ></div>
+              <div
+                className={`absolute left-0 w-full h-1 top-[50%] translate-y-[-50%] bg-slate-500
+              rounded-full duration-200 origin-left ${
+                isChecked ? "scale-x-100" : "scale-x-0"
+              }`}
+              ></div>
+            </div>
+          </div>
         </div>
         {/* Options part */}
         <div className="relative flex gap-2 justify-between items-center opacity-0 group-hover:opacity-100 duration-300">
           <div
             onClick={handleOpenColor}
-            className="text-slate-700 text-3xl rounded-full bg-transparent hover:bg-whiteHoverColorEffect p-2 duration-200 cursor-pointer"
+            className="text-slate-700 dark:text-white text-3xl rounded-full bg-transparent 
+            hover:bg-whiteHoverColorEffect dark:hover:bg-darkHoverColorEffect p-2 duration-200 cursor-pointer"
           >
             <FaPaintBrush />
             {isColorOpen && (
@@ -162,13 +200,15 @@ const ToDoItem = memo(function ToDoItem({
             )}
           </div>
           <div
-            className="text-slate-700 text-3xl rounded-full bg-transparent hover:bg-whiteHoverColorEffect p-2 duration-200 cursor-pointer"
+            className="text-slate-700 dark:text-white text-3xl rounded-full bg-transparent 
+            hover:bg-whiteHoverColorEffect dark:hover:bg-darkHoverColorEffect p-2 duration-200 cursor-pointer"
             onClick={() => deleteFunction(id)}
           >
             <MdDelete />
           </div>
           <div
-            className="text-slate-700 text-3xl rounded-full bg-transparent hover:bg-whiteHoverColorEffect p-2 duration-200 cursor-pointer"
+            className="text-slate-700 dark:text-white text-3xl rounded-full bg-transparent 
+            hover:bg-whiteHoverColorEffect dark:hover:bg-darkHoverColorEffect p-2 duration-200 cursor-pointer"
             onClick={handleNewTodo}
           >
             <AiOutlinePlus />
@@ -186,6 +226,7 @@ const ToDoItem = memo(function ToDoItem({
               deleteFunction={handleDeleteTodo}
               hasPath
               bgColor={color}
+              parentCompletion={isChecked}
             />
           );
         })}
