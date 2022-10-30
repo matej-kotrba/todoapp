@@ -12,6 +12,12 @@ module.exports = {
         whiteHoverColorEffect: "#ffffff6a",
         darkHoverColorEffect: "#22222256",
       },
+      transitionTimingFunction: {
+        cubicBazierCustom: "cubic-bezier(.22,-0.62,.73,1.62)",
+      },
+      borderRadius: {
+        connection: "0% 100% 0% 100% / 42% 0% 100% 58% ",
+      },
     },
   },
   plugins: [],

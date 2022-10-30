@@ -8,10 +8,16 @@ const Context = createContext<any>(null);
 
 const MainContext = ({ children }: { children: React.ReactNode }) => {
   const [isSavedNotificationOpen, setIsSavedNotificationOpen] = useState(false);
+  const [forceRerenderCount, setForceRerenderCount] = useState(0);
 
   return (
     <Context.Provider
-      value={{ isSavedNotificationOpen, setIsSavedNotificationOpen }}
+      value={{
+        isSavedNotificationOpen,
+        setIsSavedNotificationOpen,
+        forceRerenderCount,
+        setForceRerenderCount,
+      }}
     >
       {children}
     </Context.Provider>

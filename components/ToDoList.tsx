@@ -2,6 +2,7 @@ import type { NextPage } from "next";
 import { ToDoHeader, ToDoItem } from "../components";
 import { useState, useRef, useEffect } from "react";
 import { SiRobotframework } from "react-icons/si";
+import { useMainContext } from "../context/MainContext";
 
 export interface NestedItemsInterface {
   title: string;
@@ -14,8 +15,9 @@ const ToDoList: NextPage = () => {
   const [nestedItems, setNestedItems] = useState<
     { title: string; id: string }[]
   >([]);
-  const idCount = useRef(0);
+  const { forceRerenderCount } = useMainContext();
 
+  const idCount = useRef(0);
   const wholeArray = useRef<NestedItemsInterface[]>([]);
 
   // Handling localStorage with todos
@@ -75,32 +77,34 @@ const ToDoList: NextPage = () => {
   };
 
   return (
-    <>
+    <div>
       <ToDoHeader
         newTodo={handleNewTodo}
         saveTodosFnc={saveTodosToLocalStorage}
       />
-      {nestedItems.map((item, index) => {
-        return (
-          <ToDoItem
-            key={item.id}
-            title={item.title}
-            id={item.id}
-            arrayPart={wholeArray.current[index]}
-            deleteFunction={handleDeleteTodo}
-            parentCompletion={false}
-          />
-        );
-      })}
+      <div className="overflow-auto p-2">
+        {nestedItems.map((item, index) => {
+          return (
+            <ToDoItem
+              key={item.id}
+              title={item.title}
+              id={item.id}
+              arrayPart={wholeArray.current[index]}
+              deleteFunction={handleDeleteTodo}
+              parentCompletion={false}
+            />
+          );
+        })}
+      </div>
       {!nestedItems[0] && (
         <div className="relative grid place-items-center h-[6rem]">
-          <p className="text-2xl text-center font-semibold">
+          <p className="text-2xl text-center font-semibold text-black dark:text-white">
             You have no Todos yet, lets fix that !
           </p>
-          <SiRobotframework className="text-[6rem] absolute top-0 -z-10 text-gray-200" />
+          <SiRobotframework className="text-[6rem] absolute top-0 -z-10 text-gray-200 dark:text-gray-700" />
         </div>
       )}
-    </>
+    </div>
   );
 };
 
