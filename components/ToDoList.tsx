@@ -82,7 +82,7 @@ const ToDoList: NextPage = () => {
         newTodo={handleNewTodo}
         saveTodosFnc={saveTodosToLocalStorage}
       />
-      <div className="overflow-auto p-2">
+      <div className="overflow-auto px-2 pt-10 pb-[200px]">
         {nestedItems.map((item, index) => {
           return (
             <ToDoItem

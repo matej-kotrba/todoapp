@@ -5,7 +5,7 @@ import { BsGlobe } from "react-icons/bs";
 
 function Footer() {
   return (
-    <div className="w-full py-10 px-5 md:px-10 lg:px-40 mt-20 bg-slate-100 dark:bg-slate-900 shadow-xl">
+    <div className="w-full py-10 px-5 md:px-10 lg:px-40 mt-20 bg-slate-100 dark:bg-slate-900 shadow-xl fixed left-0 bottom-0">
       <div className="flex items-center justify-between">
         <p className="flex items-center gap-2 text-2xl text-black dark:text-white font-semibold">
           Portfolio:

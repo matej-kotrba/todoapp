@@ -10,11 +10,11 @@ import React, {
 import { MdDelete, MdRefresh } from "react-icons/md";
 import { AiOutlinePlus } from "react-icons/ai";
 import { FaPaintBrush } from "react-icons/fa";
-import { CirclePicker } from "react-color";
 import { NestedItemsInterface } from "./ToDoList";
 import { TiTick } from "react-icons/ti";
 import { IoClose } from "react-icons/io5";
 import { useMainContext } from "../context/MainContext";
+import { ColorPicker } from "../components";
 
 const ToDoItem = memo(function ToDoItem({
   title,
@@ -230,15 +230,8 @@ const ToDoItem = memo(function ToDoItem({
             >
               <FaPaintBrush />
               {isColorOpen && (
-                <div className="z-10 absolute right-[100%]">
-                  <CirclePicker
-                    onChange={handleColor}
-                    className="bg-white p-4 shadow-lg rounded-md"
-                  />
-                  <MdRefresh
-                    onClick={() => setColor("#f2f2f2")}
-                    className="absolute bottom-0 right-0 text-slate-700"
-                  />
+                <div className="z-10 absolute right-[100%] bottom-0">
+                  <ColorPicker />
                 </div>
               )}
             </div>
